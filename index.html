@@ -1,345 +1,483 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Redes de computadoras</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redes de Computadoras </title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --sidebar-width: 300px;
+            --primary-dark: #003366;
+            --secondary-blue: #005599;
+            --accent-cyan: #00d4ff;
+            --bg-body: #ADD8E6;
+            --bg-card: #ffffff;
+            --text-main: #333;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-<style>
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #ADD8E6;
-    color: #333;
-    margin: 0;
-}
+        [data-theme="dark"] {
+            --bg-body: #1a1a2e;
+            --bg-card: #16213e;
+            --text-main: #e0e0e0;
+            --primary-dark: #0f3460;
+            --secondary-blue: #21e6c1;
+        }
 
-/* TITULO PRINCIPAL */
-h1 {
-    text-align: center;
-    background-color: #003366;
-    color: white;
-    padding: 20px;
-    margin: 0;
-}
+        * { box-sizing: border-box; scroll-behavior: smooth; }
 
-/* SUBTITULOS */
-h2 {
-    background-color: #005599;
-    color: white;
-    padding: 10px;
-    border-radius: 8px;
-}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            transition: var(--transition);
+        }
 
-/* CONTENEDORES */
-.seccion {
-    background-color: white;
-    margin: 20px;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
-}
+        /* BARRA DE PROGRESO */
+        #progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            z-index: 2000;
+        }
+        #progress-bar {
+            height: 100%;
+            background: var(--accent-cyan);
+            width: 0%;
+        }
 
-/* IMAGEN + TEXTO */
-.flex {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
+        /* CONTROLES */
+        .controls {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1500;
+            display: flex;
+            gap: 10px;
+        }
 
-.flex img {
-    border-radius: 10px;
-}
+        .btn-ctrl {
+            background: var(--secondary-blue);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            font-weight: bold;
+            transition: 0.2s;
+        }
 
-/* MEDIOS */
-.medio {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
-}
+        .btn-ctrl:hover { opacity: 0.9; transform: translateY(-2px); }
 
-.medio img {
-    border-radius: 10px;
-}
-/* ===================== */
-/* CARRUSEL DE MEDIOS */
-.carrusel {
-  width: 100%;
-  overflow: hidden;
-  margin: 20px 0;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--primary-dark);
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+            padding: 20px;
+            padding-top: 70px;
+            z-index: 1000;
+            transition: var(--transition);
+            box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+        }
 
-.carrusel-items {
-  display: flex;
-  animation: scroll 35s linear infinite;
-}
+        .sidebar.closed { left: calc(-1 * var(--sidebar-width)); }
 
-.carrusel-items img {
-  width: auto;             /* ancho automático */
-  max-width: 200px;        /* ancho máximo por imagen */
-  max-height: 150px;       /* altura máxima */
-  flex-shrink: 0;
-  margin-right: 10px;
-  border-radius: 10px;
-  object-fit: cover;       /* recorta si es necesario */
-  transition: transform 0.3s, box-shadow 0.3s;
-}
+        .sidebar h2 {
+            font-size: 1.2rem;
+            text-align: center;
+            border-bottom: 2px solid var(--accent-cyan);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            background: transparent;
+        }
 
-.carrusel-items img:hover {
-  transform: scale(1.1);
-  box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
-}
+        .sidebar a {
+            display: block;
+            color: #bdc3c7;
+            padding: 12px 15px;
+            text-decoration: none;
+            transition: 0.3s;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
 
-@keyframes scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); } /* mueve la mitad de la fila para loop más suave */
-}
-/* ===================== */
+        .sidebar a:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--accent-cyan);
+            padding-left: 25px;
+        }
 
+        /* CONTENIDO PRINCIPAL */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            transition: var(--transition);
+        }
 
-</style>
+        .main-content.expanded { margin-left: 0; width: 100%; }
 
+        header {
+            background: var(--primary-dark);
+            color: white;
+            padding: 100px 40px 60px;
+            text-align: center;
+        }
+
+        header h1 { font-size: 2.5rem; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+
+        .container { padding: 40px; max-width: 1100px; margin: auto; }
+
+        .seccion {
+            background: var(--bg-card);
+            margin-bottom: 40px;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: var(--transition);
+        }
+
+        h2 {
+            background-color: var(--secondary-blue);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            color: var(--secondary-blue);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        .flex {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .flex img { border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+
+        .medio {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(128, 128, 128, 0.05);
+            border-radius: 10px;
+        }
+
+        .medio img { border-radius: 10px; flex-shrink: 0; }
+
+        /* CARRUSEL */
+        .carrusel {
+            width: 100%;
+            overflow: hidden;
+            margin: 20px 0;
+            border-radius: 10px;
+            background: white;
+            padding: 10px;
+        }
+
+        .carrusel-items { display: flex; animation: scroll 35s linear infinite; }
+        .carrusel-items img {
+            width: auto;
+            max-width: 200px;
+            max-height: 150px;
+            margin-right: 15px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        footer {
+            background: var(--primary-dark);
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 80%; }
+            .main-content { margin-left: 0; width: 100%; }
+            .flex { flex-direction: column; text-align: center; }
+            .medio { flex-direction: column; text-align: center; }
+        }
+    </style>
 </head>
-
 <body>
 
-<h1>REDES DE COMPUTADORAS</h1>
+    <div id="progress-container"><div id="progress-bar"></div></div>
 
-<div class="seccion">
-<h2>Origen de las redes</h2>
-<div class="flex">
-<p>
-Las redes de computadoras surgieron como una necesidad de compartir información y recursos entre diferentes equipos. 
-En sus inicios, durante la década de 1960, se desarrollaron los primeros sistemas de comunicación entre computadoras, 
-destacando ARPANET, un proyecto creado en Estados Unidos que permitió conectar varias universidades.
-
-Con el tiempo, evolucionaron hasta convertirse en Internet, una red mundial que permite comunicación instantánea.
-</p>
-<img src="https://humanidades.com/wp-content/uploads/2018/10/redes-de-computadora-1-e1582281508636.jpg" width="300">
-</div>
-</div>
-
-<div class="seccion">
-<h2>Definición de las redes</h2>
-<div class="flex">
-<img src="https://www.lanet.mx/wp-content/uploads/2024/12/9cae0b6cthumbnail.jpeg.webp" width="300">
-<p>
-Una red de computadoras es un conjunto de dispositivos interconectados que comparten recursos y permiten la comunicación.
-Su objetivo es facilitar el flujo de información y el trabajo colaborativo.
-</p>
-</div>
-</div>
-<div class="seccion">
-<h2>Tipos de redes</h2>
-
-<p>
-Las redes de computadoras se clasifican según su tamaño y alcance geográfico. 
-Cada tipo tiene diferentes usos dependiendo de la distancia y la cantidad de dispositivos conectados.
-</p>
-
-<div class="medio">
-<img src="https://static.wikia.nocookie.net/redesbasico/images/2/28/Image022.png/revision/latest?cb=20170905163435&path-prefix=es" width="120">
-<p><b>PAN (Personal Area Network):</b> Es una red de área personal que conecta dispositivos muy cercanos como celulares, audífonos o smartwatches. Utiliza tecnologías como Bluetooth.</p>
-</div>
-
-<div class="medio">
-<img src="https://concepto.de/wp-content/uploads/2018/10/red-LAN2-e1539806574511.jpg" width="120">
-<p><b>LAN (Local Area Network):</b> Se utiliza en casas, escuelas u oficinas. Permite compartir internet, archivos e impresoras dentro de un mismo lugar.</p>
-</div>
-
-<div class="medio">
-<img src="https://upload.wikimedia.org/wikipedia/commons/f/fd/Red_de_%C3%A1rea_metropolitana.png" width="120">
-<p><b>MAN (Metropolitan Area Network):</b> Cubre una ciudad o zona amplia. Es utilizada por empresas o gobiernos.</p>
-</div>
-
-<div class="medio">
-<img src="https://tecnobrain.ar/wp-content/uploads/2021/09/maxresdefault.jpg" width="120">
-<p><b>WAN (Wide Area Network):</b> Conecta redes a grandes distancias, incluso entre países. El mejor ejemplo es Internet.</p>
-</div>
-
-<div class="seccion">
-<h2>Topologías</h2>
-
-<p>
-Las topologías de red son la forma en que los dispositivos están conectados entre sí dentro de una red. 
-Esta estructura define cómo fluye la información y cómo se comunican los equipos. 
-</p>
-
-<div class="medio">
-<img src="https://topologiasdered.com/wp-content/uploads/topologia-de-red-en-bus-2022.webp" width="120">
-<p><b>Bus:</b> Todos los dispositivos están conectados a un solo cable principal. 
-Si el cable falla, toda la red deja de funcionar.</p>
-</div>
-
-<div class="medio">
-<img src="https://topologiasdered.com/wp-content/uploads/topologia-de-red-en-estrella-2022.webp" width="120">
-<p><b>Estrella:</b> Todos los dispositivos se conectan a un punto central (hub o switch). 
-Si un equipo falla, la red sigue funcionando, pero si el centro falla, todo se detiene.</p>
-</div>
-
-<div class="medio">
-<img src="https://topologiasdered.com/wp-content/uploads/topologia-de-red-en-anillo.webp" width="120">
-<p><b>Anillo:</b> Los dispositivos forman un círculo y la información viaja en una sola dirección pasando por cada nodo. </p>
-</div>
-
-<div class="medio">
-<img src="https://topologiasdered.com/wp-content/uploads/topologia-red-en-malla-2022.webp" width="120">
-<p><b>Malla:</b> Cada dispositivo se conecta con varios otros, lo que permite múltiples rutas y mayor seguridad.</p>
-</div>
-
-<div class="medio">
-<img src="https://topologiasdered.com/wp-content/uploads/diagrama-topologia-de-red-en-arbol.webp" width="120">
-<p><b>Árbol:</b> Tiene estructura jerárquica, combinando varias redes en forma de ramas. </p>
-</div>
-
-<div class="medio">
-<img src="https://topologiasdered.com/wp-content/uploads/topologia-de-red-hibrida-1.webp" width="120">
-<p><b>Mixta:</b> Es la combinación de varias topologías para aprovechar sus ventajas.</p>
-</div>
-
-</div>
-
-<div class="seccion" id="medios-conexion">
-  <h2>Medios de Conexión</h2>
-
-  <h3>Medios Guiados</h3>
-  <p>
-    Los medios guiados son aquellos en los que la señal viaja a través de un camino físico, es decir, por cables.  
-    Aquí la información va “guiada” dentro de ese medio, por eso tienen menos interferencias y son más estables.
-  </p>
-
-  <div class="medio">
-    <img src="https://cdn.shopify.com/s/files/1/0776/9597/5699/files/What_are_the_characteristics_of_a_coaxial_network_cable_-0.jpg?v=1698714389" width="120">
-    <p><b>Cable coaxial:</b> Buena protección contra interferencias.</p>
-  </div>
-
-  <div class="medio">
-    <img src="https://fibremex.com/fibra-optica/public/images/img_spl/productos/OPCABOCAT5ESAZ/1.jpg" width="120">
-    <p><b>Cable UTP:</b> Muy común en redes locales.</p>
-  </div>
-
-  <div class="medio">
-    <img src="https://concepto.de/wp-content/uploads/2018/02/fibra-optica-e1519650864676.jpg" width="120">
-    <p><b>Fibra óptica:</b> Alta velocidad y gran capacidad.</p>
-  </div>
-
-  <h3>Medios No Guiados</h3>
-  <p>
-    Los medios no guiados transmiten la información sin cables, a través del aire usando ondas.  
-    Aquí la señal no tiene un camino fijo, por eso puede haber más interferencias.
-  </p>
-
-  <div class="medio">
-    <img src="https://www.netspotapp.com/images/upload/images/Wi_Fi@2x.jpg" width="120">
-    <p><b>Wi-Fi:</b> Conexión inalámbrica.</p>
-  </div>
-
-  <div class="medio">
-    <img src="https://static.losnoticieristas.com/Advierten-riesgo-por-bluetooth-activado-en-el-celular-cortesia.jpg" width="120">
-    <p><b>Bluetooth:</b> Corto alcance.</p>
-  </div>
-
-  <div class="medio">
-    <img src="https://contenidos.radio.unam.mx:8282/series/portada/450-radio_unam_serie_audio_podcast_dia_mundial_de_la_radio_audio.jpg" width="120">
-    <p><b>Radio:</b> Transmisión a larga distancia.</p>
-  </div>
-
-  <h3>Carrusel de Medios de Conexión</h3>
-  <div class="carrusel">
-    <div class="carrusel-items">
-      <!-- Medios Guiados -->
-      <img src="https://cdn.shopify.com/s/files/1/0776/9597/5699/files/What_are_the_characteristics_of_a_coaxial_network_cable_-0.jpg?v=1698714389" alt="Cable coaxial">
-      <img src="https://fibremex.com/fibra-optica/public/images/img_spl/productos/OPCABOCAT5ESAZ/1.jpg" alt="Cable UTP">
-      <img src="https://concepto.de/wp-content/uploads/2018/02/fibra-optica-e1519650864676.jpg" alt="Fibra óptica">
-      <!-- Medios No Guiados -->
-      <img src="https://www.netspotapp.com/images/upload/images/Wi_Fi@2x.jpg" alt="Wi-Fi">
-      <img src="https://static.losnoticieristas.com/Advierten-riesgo-por-bluetooth-activado-en-el-celular-cortesia.jpg" alt="Bluetooth">
-      <img src="https://contenidos.radio.unam.mx:8282/series/portada/450-radio_unam_serie_audio_podcast_dia_mundial_de_la_radio_audio.jpg" alt="Radio">
+    <div class="controls">
+        <button class="btn-ctrl" onclick="toggleSidebar()">☰ Menú</button>
+        <button class="btn-ctrl" onclick="toggleTheme()" id="theme-btn">🌙 Modo Oscuro</button>
     </div>
-  </div>
-</div>
 
+    <nav class="sidebar" id="sidebar">
+        <h2>NAVEGACIÓN</h2>
+        <a href="#origen">Origen</a>
+        <a href="#definicion">Definición</a>
+        <a href="#tipos">Tipos de Redes</a>
+        <a href="#topologias">Topologías</a>
+        <a href="#medios-conexion">Medios de Conexión</a>
+        <a href="#dispositivos">Dispositivos</a>
+        <a href="#modelo-osi">Modelo OSI</a>
+    </nav>
 
-</div>
+    <div class="main-content" id="main-content">
+        <header>
+            <h1>REDES DE COMPUTADORAS</h1>
+            
+        </header>
 
-<div class="seccion">
-<h2>Dispositivos de Interconexión</h2>
+        <div class="container">
+            <section class="seccion" id="origen">
+                <h2>Origen de las redes</h2>
+                <div class="flex">
+                    <p style="flex:1">
+                        Las redes de computadoras surgieron como una necesidad de compartir información y recursos entre diferentes equipos. 
+                        En sus inicios, durante la década de 1960, se desarrollaron los primeros sistemas de comunicación entre computadoras, 
+                        destacando ARPANET, un proyecto creado en Estados Unidos que permitió conectar varias universidades.
+                        <br><br>
+                        Con el tiempo, evolucionaron hasta convertirse en Internet, una red mundial que permite comunicación instantánea.
+                    </p>
+                    <img src="https://humanidades.com/wp-content/uploads/2018/10/redes-de-computadora-1-e1582281508636.jpg" width="300">
+                </div>
+            </section>
 
-<p>
-Los dispositivos de interconexión son elementos fundamentales en una red, ya que permiten conectar diferentes equipos 
-y garantizar que la información llegue correctamente a su destino. Estos dispositivos trabajan en distintas capas del modelo OSI 
-y ayudan a mejorar la comunicación, velocidad y seguridad de la red.
-</p>
+            <section class="seccion" id="definicion">
+                <h2>Definición de las redes</h2>
+                <div class="flex">
+                    <img src="https://www.lanet.mx/wp-content/uploads/2024/12/9cae0b6cthumbnail.jpeg.webp" width="300">
+                    <p style="flex:1">
+                        Una red de computadoras es un conjunto de dispositivos interconectados que comparten recursos y permiten la comunicación. 
+                        Su objetivo es facilitar el flujo de información y el trabajo colaborativo.
+                    </p>
+                </div>
+            </section>
 
-<div class="medio">
-<img src="https://trabajoracks.home.blog/wp-content/uploads/2019/03/14.jpg" width="120">
-<p><b>HUB:</b> Es un dispositivo básico que conecta varios equipos en una red local. Envía la información a todos los dispositivos conectados sin distinguir el destinatario.</p>
-</div>
+            <section class="seccion" id="tipos">
+                <h2>Tipos de redes</h2>
+                <p>Las redes de computadoras se clasifican según su tamaño y alcance geográfico. Cada tipo tiene diferentes usos dependiendo de la distancia y la cantidad de dispositivos conectados.</p>
 
-<div class="medio">
-<img src="https://significado.com/wp-content/uploads/switch.jpg" width="120">
-<p><b>SWITCH:</b> Es más inteligente que el hub. Envía los datos únicamente al dispositivo correcto, lo que mejora la velocidad y reduce el tráfico en la red.</p>
-</div>
+                <div class="medio">
+                    <img src="https://static.wikia.nocookie.net/redesbasico/images/2/28/Image022.png/revision/latest?cb=20170905163435&path-prefix=es" width="120">
+                    <p><b>PAN (Personal Area Network):</b> Es una red de área personal que conecta dispositivos muy cercanos como celulares, audífonos o smartwatches. Utiliza tecnologías como Bluetooth.</p>
+                </div>
 
-<div class="medio">
-<img src="https://www.steren.com.mx/media/catalog/product/cache/0236bbabe616ddcff749ccbc14f38bf2/image/230659bc1/modem-router-wi-fi-mifi-4g-ac1200-2-4-ghz-y-5-ghz-hasta-35-m-de-cobertura.jpg" width="120">
-<p><b>ROUTER:</b> Permite conectar diferentes redes entre sí. Se encarga de dirigir los paquetes de datos hacia su destino, como cuando te conectas a Internet.</p>
-</div>
+                <div class="medio">
+                    <img src="https://concepto.de/wp-content/uploads/2018/10/red-LAN2-e1539806574511.jpg" width="120">
+                    <p><b>LAN (Local Area Network):</b> Se utiliza en casas, escuelas u oficinas. Permite compartir internet, archivos e impresoras dentro de un mismo lugar.</p>
+                </div>
 
-<div class="medio">
-<img src="https://i.blogs.es/7b6766/wi-bridge/650_1200.jpg" width="120">
-<p><b>BRIDGE:</b> Sirve para conectar dos redes similares y filtrar el tráfico innecesario, mejorando el rendimiento.</p>
-</div>
+                <div class="medio">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fd/Red_de_%C3%A1rea_metropolitana.png" width="120">
+                    <p><b>MAN (Metropolitan Area Network):</b> Cubre una ciudad o zona amplia. Es utilizada por empresas o gobiernos.</p>
+                </div>
 
-<div class="medio">
-<img src="https://i.blogs.es/f38367/repetidor-wif/450_1000.jpg" width="120">
-<p><b>REPETIDOR:</b> Amplifica la señal de red para que pueda viajar mayores distancias sin perder calidad.</p>
-</div>
+                <div class="medio">
+                    <img src="https://definicion.de/wp-content/uploads/2010/05/wan-1.jpg" width="120">
+                    <p><b>WAN (Wide Area Network):</b> Conecta redes a grandes distancias, incluso entre países. El mejor ejemplo es Internet.</p>
+                </div>
+            </section>
 
-<div class="medio">
-<img src="https://www.redeszone.net/app/uploads-redeszone.net/2022/02/transceptor-SFP-01-e1645783615672.jpg" width="120">
-<p><b>TRANSCEPTOR:</b> Dispositivo que puede enviar y recibir señales. Es muy usado en redes de fibra óptica.</p>
-</div>
+            <section class="seccion" id="topologias">
+                <h2>Topologías</h2>
+                <p>Las topologías de red son la forma en que los dispositivos están conectados entre sí dentro de una red. Esta estructura define cómo fluye la información y cómo se comunican los equipos.</p>
 
+                <div class="medio">
+                    <img src="https://topologiasdered.com/wp-content/uploads/topologia-de-red-en-bus-2022.webp" width="120">
+                    <p><b>Bus:</b> Todos los dispositivos están conectados a un solo cable principal. Si el cable falla, toda la red deja de funcionar.</p>
+                </div>
 
-<div class="seccion">
-<h2>Modelo OSI (Open Systems Interconnection)</h2>
+                <div class="medio">
+                    <img src="https://topologiasdered.com/wp-content/uploads/topologia-de-red-en-estrella-2022.webp" width="120">
+                    <p><b>Estrella:</b> Todos los dispositivos se conectan a un punto central (hub o switch). Si un equipo falla, la red sigue funcionando, pero si el centro falla, todo se detiene.</p>
+                </div>
 
-<p>
-El modelo OSI es un modelo conceptual que divide la comunicación de red en 7 capas, 
-permitiendo que diferentes sistemas puedan comunicarse entre sí de manera estandarizada. 
-Cada capa tiene una función específica y trabaja junto con las demás para enviar y recibir datos correctamente.
-</p>
+                <div class="medio">
+                    <img src="https://topologiasdered.com/wp-content/uploads/topologia-de-red-en-anillo.webp" width="120">
+                    <p><b>Anillo:</b> Los dispositivos forman un círculo y la información viaja en una sola dirección pasando por cada nodo.</p>
+                </div>
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/OSI_Model_v1.svg" width="300">
+                <div class="medio">
+                    <img src="https://topologiasdered.com/wp-content/uploads/topologia-red-en-malla-2022.webp" width="120">
+                    <p><b>Malla:</b> Cada dispositivo se conecta con varios otros, lo que permite múltiples rutas y mayor seguridad.</p>
+                </div>
 
-<ol>
-<li><b>Capa Física:</b> Se encarga de transmitir los datos en forma de bits a través de medios físicos como cables o señales inalámbricas.</li>
+                <div class="medio">
+                    <img src="https://topologiasdered.com/wp-content/uploads/diagrama-topologia-de-red-en-arbol.webp" width="120">
+                    <p><b>Árbol:</b> Tiene estructura jerárquica, combinando varias redes en forma de ramas.</p>
+                </div>
 
-<li><b>Capa de Enlace de Datos:</b> Organiza los datos en tramas y detecta errores en la transmisión dentro de la misma red.</li>
+                <div class="medio">
+                    <img src="https://topologiasdered.com/wp-content/uploads/topologia-de-red-hibrida-1.webp" width="120">
+                    <p><b>Mixta:</b> Es la combinación de varias topologías para aprovechar sus ventajas.</p>
+                </div>
+            </section>
 
-<li><b>Capa de Red:</b> Se encarga del direccionamiento y enrutamiento de los datos entre diferentes redes.</li>
+            <section class="seccion" id="medios-conexion">
+                <h2>Medios de Conexión</h2>
 
-<li><b>Capa de Transporte:</b> Garantiza que los datos lleguen completos y en orden correcto al destino.</li>
+                <h3>Medios Guiados</h3>
+                <p>Los medios guiados son aquellos en los que la señal viaja a través de un camino físico, es decir, por cables. Aquí la información va “guiada” dentro de ese medio, por eso tienen menos interferencias y son más estables.</p>
 
-<li><b>Capa de Sesión:</b> Controla la conexión entre dispositivos, iniciando y finalizando la comunicación.</li>
+                <div class="medio">
+                    <img src="https://cdn.shopify.com/s/files/1/0776/9597/5699/files/What_are_the_characteristics_of_a_coaxial_network_cable_-0.jpg?v=1698714389" width="120">
+                    <p><b>Cable coaxial:</b> Buena protección contra interferencias.</p>
+                </div>
 
-<li><b>Capa de Presentación:</b> Traduce, comprime y cifra los datos para que sean entendibles por el sistema.</li>
+                <div class="medio">
+                    <img src="https://fibremex.com/fibra-optica/public/images/img_spl/productos/OPCABOCAT5ESAZ/1.jpg" width="120">
+                    <p><b>Cable UTP:</b> Muy común en redes locales.</p>
+                </div>
 
-<li><b>Capa de Aplicación:</b> Es la capa más cercana al usuario y permite interactuar con servicios como internet, correo o aplicaciones.</li>
-</ol>
+                <div class="medio">
+                    <img src="https://concepto.de/wp-content/uploads/2018/02/fibra-optica-e1519650864676.jpg" width="120">
+                    <p><b>Fibra óptica:</b> Alta velocidad y gran capacidad.</p>
+                </div>
 
-<p>
-El modelo OSI es importante porque ayuda a entender cómo viajan los datos en una red y facilita la detección de errores, 
-ya que cada problema puede ubicarse en una capa específica.
-</p>
+                <h3>Medios No Guiados</h3>
+                <p>Los medios no guiados transmiten la información sin cables, a través del aire usando ondas. Aquí la señal no tiene un camino fijo, por eso puede haber más interferencias.</p>
 
-</div>
-<footer style="background-color: #003366; color: white; text-align: center; padding: 15px; margin-top: 20px;">
-    <p><b>Autor:</b> Darien Rubio</p>
-    <p><b>Grupo:</b> 4J</p>
-</footer>
+                <div class="medio">
+                    <img src="https://www.netspotapp.com/images/upload/images/Wi_Fi@2x.jpg" width="120">
+                    <p><b>Wi-Fi:</b> Conexión inalámbrica.</p>
+                </div>
+
+                <div class="medio">
+                    <img src="https://static.losnoticieristas.com/Advierten-riesgo-por-bluetooth-activado-en-el-celular-cortesia.jpg" width="120">
+                    <p><b>Bluetooth:</b> Corto alcance.</p>
+                </div>
+
+                <div class="medio">
+                    <img src="https://contenidos.radio.unam.mx:8282/series/portada/450-radio_unam_serie_audio_podcast_dia_mundial_de_la_radio_audio.jpg" width="120">
+                    <p><b>Radio:</b> Transmisión a larga distancia.</p>
+                </div>
+
+                <div class="carrusel">
+                    <div class="carrusel-items">
+                        <img src="https://cdn.shopify.com/s/files/1/0776/9597/5699/files/What_are_the_characteristics_of_a_coaxial_network_cable_-0.jpg?v=1698714389" alt="Cable coaxial">
+                        <img src="https://fibremex.com/fibra-optica/public/images/img_spl/productos/OPCABOCAT5ESAZ/1.jpg" alt="Cable UTP">
+                        <img src="https://concepto.de/wp-content/uploads/2018/02/fibra-optica-e1519650864676.jpg" alt="Fibra óptica">
+                        <img src="https://www.netspotapp.com/images/upload/images/Wi_Fi@2x.jpg" alt="Wi-Fi">
+                        <img src="https://static.losnoticieristas.com/Advierten-riesgo-por-bluetooth-activado-en-el-celular-cortesia.jpg" alt="Bluetooth">
+                        <img src="https://contenidos.radio.unam.mx:8282/series/portada/450-radio_unam_serie_audio_podcast_dia_mundial_de_la_radio_audio.jpg" alt="Radio">
+                        <img src="https://cdn.shopify.com/s/files/1/0776/9597/5699/files/What_are_the_characteristics_of_a_coaxial_network_cable_-0.jpg?v=1698714389" alt="Cable coaxial">
+                        <img src="https://fibremex.com/fibra-optica/public/images/img_spl/productos/OPCABOCAT5ESAZ/1.jpg" alt="Cable UTP">
+                    </div>
+                </div>
+            </section>
+
+            <section class="seccion" id="dispositivos">
+                <h2>Dispositivos de Interconexión</h2>
+                <p>Los dispositivos de interconexión son elementos fundamentales en una red, ya que permiten conectar diferentes equipos y garantizar que la información llegue correctamente a su destino. Estos dispositivos trabajan en distintas capas del modelo OSI y ayudan a mejorar la comunicación, velocidad y seguridad de la red.</p>
+
+                <div class="medio">
+                    <img src="https://trabajoracks.home.blog/wp-content/uploads/2019/03/14.jpg" width="120">
+                    <p><b>HUB:</b> Es un dispositivo básico que conecta varios equipos en una red local. Envía la información a todos los dispositivos conectados sin distinguir el destinatario.</p>
+                </div>
+
+                <div class="medio">
+                    <img src="https://significado.com/wp-content/uploads/switch.jpg" width="120">
+                    <p><b>SWITCH:</b> Es más inteligente que el hub. Envía los datos únicamente al dispositivo correcto, lo que mejora la velocidad y reduce el tráfico en la red.</p>
+                </div>
+
+                <div class="medio">
+                    <img src="https://www.steren.com.mx/media/catalog/product/cache/0236bbabe616ddcff749ccbc14f38bf2/image/230659bc1/modem-router-wi-fi-mifi-4g-ac1200-2-4-ghz-y-5-ghz-hasta-35-m-de-cobertura.jpg" width="120">
+                    <p><b>ROUTER:</b> Permite conectar diferentes redes entre sí. Se encarga de dirigir los paquetes de datos hacia su destino, como cuando te conectas a Internet.</p>
+                </div>
+
+                <div class="medio">
+                    <img src="https://i.blogs.es/7b6766/wi-bridge/650_1200.jpg" width="120">
+                    <p><b>BRIDGE:</b> Sirve para conectar dos redes similares y filtrar el tráfico innecesario, mejorando el rendimiento.</p>
+                </div>
+
+                <div class="medio">
+                    <img src="https://i.blogs.es/f38367/repetidor-wif/450_1000.jpg" width="120">
+                    <p><b>REPETIDOR:</b> Amplifica la señal de red para que pueda viajar mayores distancias sin perder calidad.</p>
+                </div>
+
+                <div class="medio">
+                    <img src="https://www.redeszone.net/app/uploads-redeszone.net/2022/02/transceptor-SFP-01-e1645783615672.jpg" width="120">
+                    <p><b>TRANSCEPTOR:</b> Dispositivo que puede enviar y recibir señales. Es muy usado en redes de fibra óptica.</p>
+                </div>
+            </section>
+
+            <section class="seccion" id="modelo-osi">
+                <h2>Modelo OSI (Open Systems Interconnection)</h2>
+                <p>El modelo OSI es un modelo conceptual que divide la comunicación de red en 7 capas, permitiendo que diferentes sistemas puedan comunicarse entre sí de manera estandarizada. Cada capa tiene una función específica y trabaja junto con las demás para enviar y recibir datos correctamente.</p>
+
+                <div class="flex" style="justify-content: center; margin-bottom: 20px;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/OSI_Model_v1.svg" width="350">
+                </div>
+
+                <ol>
+                    <li><b>Capa Física:</b> Se encarga de transmitir los datos en forma de bits a través de medios físicos como cables o señales inalámbricas.</li>
+                    <li><b>Capa de Enlace de Datos:</b> Organiza los datos en tramas y detecta errores en la transmisión dentro de la misma red.</li>
+                    <li><b>Capa de Red:</b> Se encarga del direccionamiento y enrutamiento de los datos entre diferentes redes.</li>
+                    <li><b>Capa de Transporte:</b> Garantiza que los datos lleguen completos y en orden correcto al destino.</li>
+                    <li><b>Capa de Sesión:</b> Controla la conexión entre dispositivos, iniciando y finalizando la comunicación.</li>
+                    <li><b>Capa de Presentación:</b> Traduce, comprime y cifra los datos para que sean entendibles por el sistema.</li>
+                    <li><b>Capa de Aplicación:</b> Es la capa más cercana al usuario y permite interactuar con servicios como internet, correo o aplicaciones.</li>
+                </ol>
+
+                <p>El modelo OSI es importante porque ayuda a entender cómo viajan los datos en una red y facilita la detección de errores, ya que cada problema puede ubicarse en una capa específica.</p>
+            </section>
+        </div>
+
+        <footer>
+            <p><b>Autor:</b> Darien Rubio | <b>Grupo:</b> 4J | <b>Fecha:</b> 2026</p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('closed');
+            document.getElementById('main-content').classList.toggle('expanded');
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('theme-btn');
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.removeAttribute('data-theme');
+                btn.innerHTML = "🌙 Modo Oscuro";
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                btn.innerHTML = "☀️ Modo Claro";
+            }
+        }
+
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+    </script>
 </body>
 </html>
